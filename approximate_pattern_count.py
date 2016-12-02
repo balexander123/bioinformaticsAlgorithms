@@ -11,13 +11,17 @@ def hamming_distance(p,q):
             hamming_count += 1
     return hamming_count
 
-def approximate_pattern_count(text, pattern, d):
+def approximate_pattern_matches(pattern, text, d):
     count = 0
-    for i in range(0, len(text) - len(pattern)):
+    indexes = []
+    for i in range(0, len(text) - len(pattern) + 1):
         pattern_prime = text[i:i+len(pattern)]
         if hamming_distance(pattern,pattern_prime) <= d:
             count += 1
-    return count
+            indexes.append(i)
+    return indexes
 
-print(approximate_pattern_count(argv[1],argv[2],int(argv[3])))
+approximate_match_indexes = approximate_pattern_matches(argv[1],argv[2],int(argv[3]))
+print(len(approximate_match_indexes))
+print(*approximate_match_indexes, sep=' ')
 
