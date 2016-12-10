@@ -11,7 +11,7 @@ def pattern_count(text, pattern):
     return count
 
 def frequent_words(text, k):
-    frequency_patterns = []
+    frequent_patterns = []
     count=array.array('i',(0,)*len(text))
     for i in range(len(text) - k):
         pattern = text[i:i+k]
@@ -19,7 +19,7 @@ def frequent_words(text, k):
     maxCount = max(count)
     for i in range(len(text) - k):
         if count[i] == maxCount:
-            frequency_patterns.append(text[i:i+k])
-    return ' '.join(set(frequency_patterns))
+            frequent_patterns.append(text[i:i+k])
+    return ' '.join(set(frequent_patterns))
 
 print(frequent_words(argv[1], int(argv[2])))

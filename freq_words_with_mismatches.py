@@ -15,6 +15,8 @@ parser.add_argument('-k', help='k-mer length')
 parser.add_argument('-d', help='maximum hamming distance')
 parser.add_argument('--reverse', help='include reverse complemnet')
 
+args = parser.parse_args()
+
 #
 # utilities
 #
@@ -154,20 +156,36 @@ def reverse_complement(pattern):
 #             add Pattern to the set FrequentPatterns
 #    return FrequentPatterns
 
-def frequent_words_with_mismatches(text, k, d, reverse):
+def frequent_words_with_mismatches(text, k, d):
     frequent_patterns = set()
     close = numpy.zeros(4 ** k, numpy.int)
+    rev_close = numpy.zeros(4 ** k, numpy.int)
     frequency_array = numpy.zeros(4**k,numpy.int)
 
     for i in range(0, len(text) - k):
+
         neighborhood = neighbors(text[i:i+k], d)
+
         for pattern in neighborhood:
             index = pattern_to_number(''.join(map(str, pattern)))
             close[index] = 1
+
+        # do another go round with reverse compliment
+        if args.reverse != None:
+            reverse_neighborhood = neighbors(reverse_complement(text[i:i + k]),d)
+
+            for pattern in reverse_neighborhood:
+                index = pattern_to_number(''.join(map(str, pattern)))
+                rev_close[index] = 1
+
     for i in range(0, (4 ** k)-1):
         if close[i] == 1:
             pattern = ''.join(map(str, number_to_pattern(i,k)))
             frequency_array[i] = approximate_pattern_count(text, pattern, d)
+        if rev_close[i] == 1:
+            pattern = ''.join(map(str, number_to_pattern(i, k)))
+            frequency_array[i] = approximate_pattern_count(text, pattern, d)
+
     maxCount = max(frequency_array)
     for i in range(0, (4**k)-1):
         if frequency_array[i] == maxCount:
@@ -175,11 +193,9 @@ def frequent_words_with_mismatches(text, k, d, reverse):
             frequent_patterns.add(pattern)
     return frequent_patterns
 
-args = parser.parse_args()
-
 if args.file != None:
     with open(args.file, 'r') as myfile: data=myfile.read().replace('\n', '')
 else:
     data = args.genome
 
-print(' '.join(map(str, frequent_words_with_mismatches(data,int(args.k),int(args.d),args.reverse))))
+print(' '.join(map(str, frequent_words_with_mismatches(data,int(args.k),int(args.d)))))
