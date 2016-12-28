@@ -9,19 +9,28 @@ import array
 
 import numpy
 
+import argparse
+
+parser = argparse.ArgumentParser(description='Find frequent k-mer words with maximum allowed mismatches d.')
+parser.add_argument('--file', nargs='?', help='the file that contains dna motifs')
+parser.add_argument('-k', nargs='?', help='k-mer size')
+parser.add_argument('--distance', nargs='?', help='allowable hamming distance')
+
+args = parser.parse_args()
+
 # Neighbors(Pattern, d)
 #   if d = 0
 #       return {Pattern}
 #   if | Pattern | = 1
 #       return {A, C, G, T}
-#   Neighborhood ← an empty set
-#   SuffixNeighbors ← Neighbors(Suffix(Pattern), d)
+#   Neighborhood <- an empty set
+#   SuffixNeighbors <- Neighbors(Suffix(Pattern), d)
 #   for each string Text from SuffixNeighbors
 #       if HammingDistance(Suffix(Pattern), Text) < d
 #           for each nucleotide x
-#               add x • Text to Neighborhood
+#               add Text to Neighborhood
 #       else
-#           add FirstSymbol(Pattern) • Text to Neighborhood
+#           add FirstSymbol(Pattern) . Text to Neighborhood
 #   return Neighborhood
 
 def suffix(pattern):
@@ -62,43 +71,56 @@ def neighbors(pattern, d):
             neighborhood.add(first_symbol(pattern) + text)
     return neighborhood
 
-def pattern_count(text, pattern):
-    count = 0
-    for i in range(len(text) - len(pattern) + 1):
-        if text[i:i+len(pattern)] == pattern:
-            count += 1
-    return count
-
-def frequent_words(text, k):
-    frequent_patterns = []
-    count=array.array('i',(0,)*len(text))
-    for i in range(len(text) - k):
-        pattern = text[i:i+k]
-        count[i] = pattern_count(text,pattern)
-    maxCount = max(count)
-    for i in range(len(text) - k):
-        if count[i] == maxCount:
-            frequent_patterns.append(text[i:i+k])
-    return set(frequent_patterns)
-
 #
 # end utilities
 #
 
 # MotifEnumeration(Dna, k, d)
-#     Patterns ← an empty set
+#     Patterns <- an empty set
 #     for each k-mer Pattern in Dna
-#         for each k-mer Pattern’ differing from Pattern by at most d
-#           mismatches
+#         for each k-mer Pattern' differing from Pattern by at most d mismatches
 #             if Pattern' appears in each string from Dna with at most d
 #             mismatches
 #                 add Pattern' to Patterns
 #     remove duplicates from Patterns
 #     return Patterns
+
+def k_mer_patterns_from_text(text, k):
+    k_mer_patterns = []
+    for i in range(0, len(text) - k + 1):
+        k_mer_patterns.append(text[i:i + k])
+    return set(k_mer_patterns)
+
+def k_mer_patterns_from_dna(dna,k):
+    k_mer_patterns = []
+    for text in dna:
+        k_mer_patterns.append(k_mer_patterns_from_text(text,k))
+    return k_mer_patterns
+
+def appears_in(dna, pattern, d):
+    k = len(pattern)
+    num_strings = len(dna)
+    num_matches = 0
+    for q in k_mer_patterns_from_dna(dna, k):
+        if hamming_distance(pattern, q) <= d:
+            return True
+    return False
         
 def motif_enumeration(dna, k, d):
     patterns= set()
-    for text in dna:
-        for k_mer_pattern in frequent_words(text, d):
-            for pattern_prime in neighbors(k_mer_pattern, d):
-                print(pattern_prime)
+    k_mer_patterns = k_mer_patterns_from_dna(dna,k)
+    for k_mer_pattern in k_mer_patterns:
+        pattern_neighbors = neighbors(k_mer_pattern, d)
+        for pattern_prime in pattern_neighbors:
+            if appears_in(dna, pattern_prime, d):
+                patterns.add(pattern_prime)
+    return patterns
+
+def dna_from_file(dna_file):
+    with open(dna_file, 'r') as myfile:
+        dna = myfile.readlines()
+        for i, text in enumerate(dna):
+            dna[i] = text.replace('\n', '')
+    return dna
+
+print(motif_enumeration(dna_from_file(args.file),int(args.k),int(args.distance)))
