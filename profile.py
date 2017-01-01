@@ -6,6 +6,8 @@ from enum import Enum
 
 import numpy
 
+import math
+
 class Profile:
 
 
@@ -76,6 +78,17 @@ class Profile:
                 count_column = [self.count_matrix[i][col] for i in range(0, 4)]
                 self.profile_matrix[row][col] = self.count_matrix[row][col] / sum(count_column)
 
+    def compute_profile_matrix_entropy(self):
+        total_entropy = 0
+        for column in range(len(self.profile_matrix[0])):
+            profile_column = [self.profile_matrix[i][column] for i in range(0,4)]
+            entropy = 0
+            for probability in profile_column:
+                entropy += probability * math.log(probability,2)
+            entropy *= -1
+            total_entropy += entropy
+        return total_entropy
+
     def initialize_with(self, k, dna):
         self.k = k
         self.num_motifs = len(dna[0])
@@ -93,4 +106,5 @@ class Profile:
 
 if __name__ == "__main__":
     profile = Profile(argv[1])
-    profile.motif_score()
+    print(profile.motif_score())
+    print(profile.compute_profile_matrix_entropy())

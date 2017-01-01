@@ -49,7 +49,10 @@ class TestProfile(unittest.TestCase):
                          '3 1 2 2 2 1 2 1 3 2 3 3 2 1 2 2 2 3 3 1 1 2 4 2 2 2 3 1 1 1 2 2','Count(Motif) for T')
 
     def test_consensus(self):
-        pass
+        pass # TBD
+
+    def test_profile_entropy(self):
+        self.assertAlmostEqual(self.profile.compute_profile_matrix_entropy(),60.1553247,7,'Profile entropy is computed correctly')
 
     def test_compute_profile_matrix(self):
         for column in range(len(self.profile.profile_matrix[0])):

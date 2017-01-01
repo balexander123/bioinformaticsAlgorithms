@@ -131,4 +131,4 @@ class MotifEnumeration:
 
 if __name__ == "__main__":
     motif_enum = MotifEnumeration(argv[1])
-    print(motif_enum.motif_enumeration())
+    print(' '.join(sorted(motif_enum.motif_enumeration())))
