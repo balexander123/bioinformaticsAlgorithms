@@ -9,8 +9,10 @@ class TestProfile(unittest.TestCase):
     def setUp(self):
         file = 'fixtures/week4_1_1_test_data_set.txt'
         quiz_file = 'fixtures/week4_quiz_test_data.txt'
+        NF_xB_file = 'fixtures/NF-xB_motifs.txt'
         self.profile = profile.Profile(file)
         self.profile_quiz = profile.Profile(quiz_file)
+        self.profile_motifs = profile.Profile(NF_xB_file)
 
     def test_profile_attributes(self):
         self.assertEqual(self.profile.num_motifs, self.NUMBER_OF_MOTIFS, "There are 5 dna motifs")

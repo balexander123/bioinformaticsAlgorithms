@@ -19,17 +19,14 @@ class Profile:
 
     nucleotideIndex = {'A': 0, 'C': 1, 'G': 2, 'T': 3 }
 
-    def __init__(self, file='', k=0, dna=None, N=1):
+    def __init__(self, file=None, k=0, dna=None):
         if dna is None:
             dna = []
-        if file != '':
+        if file != None:
             self.initialize_from_file(file)
         else:
             self.initialize_with(k,dna)
         self.initialize_profile()
-
-    # def __init__(self, dna):
-    #     self.initialize_profile()
 
     def initialize_profile(self):
         self.motif_matrix = Matrix = [['' for x in range(len(self.dna[0]))] for y in range(len(self.dna))]
@@ -93,6 +90,14 @@ class Profile:
         self.k = k
         self.num_motifs = len(dna[0])
         self.dna = dna
+
+    def initialize_from_motifs_file(self, file):
+        self.k = 0
+        with open(file, 'r') as motif_file:
+            self.dna = motif_file.readlines()
+            self.num_motifs = len(self.dna)
+            for i, text in enumerate(self.dna):
+                self.dna[i] = text.replace('\n', '')
 
     def initialize_from_file(self, file):
         with open(file, 'r') as myfile:
