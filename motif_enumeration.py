@@ -18,21 +18,6 @@ import numpy
 #
 # args = parser.parse_args()
 
-# Neighbors(Pattern, d)
-#   if d = 0
-#       return {Pattern}
-#   if | Pattern | = 1
-#       return {A, C, G, T}
-#   Neighborhood <- an empty set
-#   SuffixNeighbors <- Neighbors(Suffix(Pattern), d)
-#   for each string Text from SuffixNeighbors
-#       if HammingDistance(Suffix(Pattern), Text) < d
-#           for each nucleotide x
-#               add Text to Neighborhood
-#       else
-#           add FirstSymbol(Pattern) . Text to Neighborhood
-#   return Neighborhood
-
 class MotifEnumeration:
 
     def __init__(self, file):
@@ -74,16 +59,6 @@ class MotifEnumeration:
 #
 # end utilities
 #
-
-# MotifEnumeration(Dna, k, d)
-#     Patterns <- an empty set
-#     for each k-mer Pattern in Dna
-#         for each k-mer Pattern' differing from Pattern by at most d mismatches
-#             if Pattern' appears in each string from Dna with at most d
-#             mismatches
-#                 add Pattern' to Patterns
-#     remove duplicates from Patterns
-#     return Patterns
 
     def k_mer_patterns_from_text(self, text, k):
         k_mer_patterns = []
