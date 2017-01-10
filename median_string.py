@@ -62,6 +62,7 @@ def number_to_pattern(index, k):
 
 def median_string(dna, k):
     distance = 999
+    median = ''
     for i in range(0, (4 ** k) - 1):
         pattern = ''.join(number_to_pattern(i,k))
         k_mer_dist = distance_between_pattern_and_strings(pattern, dna)

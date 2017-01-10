@@ -19,40 +19,41 @@ class Profile:
 
     nucleotideIndex = {'A': 0, 'C': 1, 'G': 2, 'T': 3 }
 
-    def __init__(self, file=None, k=0, dna=None):
+    def __init__(self, file=None, k=0, dna=None, psuedocount=1):
         if dna is None:
             dna = []
         if file != None:
             self.initialize_from_file(file)
         else:
             self.initialize_with(k,dna)
-        self.initialize_profile()
+        self.initialize_profile(psuedocount)
 
-    def initialize_profile(self):
-        self.motif_matrix = Matrix = [['' for x in range(len(self.dna[0]))] for y in range(len(self.dna))]
-        for i in range(0, len(self.dna)):
-            self.motif_matrix[i] = list(self.dna[i])
-        self.profile_matrix = Matrix = [[0 for x in range(len(self.dna[0]))] for y in range(4)]
-        self.count_matrix = Matrix = [[0 for x in range(len(self.dna[0]))] for y in range(4)]
-        self.score_array = numpy.zeros(len(self.motif_matrix[0]), numpy.int)
-        self.pseudocount = 0
+    def initialize_profile(self, psuedocount):
+        self.pseudocount = psuedocount
         self.score = 0
-
-        self.motif_count()
-        self.apply_laplace_rule_of_succession(1)
-        self.compute_profile_matrix()
-
-        self.data = []
+        if len(self.dna) != 0:
+            self.motif_matrix = Matrix = [['' for x in range(len(self.dna[0]))] for y in range(len(self.dna))]
+            for i in range(0, len(self.dna)):
+                self.motif_matrix[i] = list(self.dna[i])
+            self.profile_matrix = Matrix = [[0 for x in range(len(self.dna[0]))] for y in range(4)]
+            self.count_matrix = Matrix = [[0 for x in range(len(self.dna[0]))] for y in range(4)]
+            self.score_array = numpy.zeros(len(self.motif_matrix[0]), numpy.int)
+            self.motif_count()
+            self.apply_laplace_rule_of_succession(self.pseudocount)
+            self.compute_profile_matrix()
+            self.motif_score()
 
     def motif_score(self):
-        for column in range(len(self.motif_matrix[0])):
-            motif_column = [self.motif_matrix[i][column] for i in range(0,self.num_motifs)]
-            self.score_array[column] = len(motif_column) - max(
-                motif_column.count(self.Nucleotides.A.value),
-                motif_column.count(self.Nucleotides.C.value),
-                motif_column.count(self.Nucleotides.G.value),
-                motif_column.count(self.Nucleotides.T.value))
-        self.score = sum(self.score_array)
+        self.score = 0
+        if len(self.dna) > 0:
+            for column in range(len(self.motif_matrix[0])):
+                motif_column = [self.motif_matrix[i][column] for i in range(0,self.num_motifs)]
+                self.score_array[column] = len(motif_column) - max(
+                    motif_column.count(self.Nucleotides.A.value),
+                    motif_column.count(self.Nucleotides.C.value),
+                    motif_column.count(self.Nucleotides.G.value),
+                    motif_column.count(self.Nucleotides.T.value))
+            self.score = sum(self.score_array)
         return(self.score)
 
     def motif_count(self):
@@ -65,9 +66,10 @@ class Profile:
 
     def apply_laplace_rule_of_succession(self,pseudocount):
         self.pseudocount = pseudocount
-        for row in range(len(self.count_matrix)):
-            for col in range(len(self.count_matrix[0])):
-                self.count_matrix[row][col] += pseudocount
+        if pseudocount != 0:
+            for row in range(len(self.count_matrix)):
+                for col in range(len(self.count_matrix[0])):
+                    self.count_matrix[row][col] += pseudocount
 
     def compute_profile_matrix(self):
         for row in range(len(self.count_matrix)):
@@ -88,7 +90,7 @@ class Profile:
 
     def initialize_with(self, k, dna):
         self.k = k
-        self.num_motifs = len(dna[0])
+        self.num_motifs = len(dna)
         self.dna = dna
 
     def initialize_from_motifs_file(self, file):
