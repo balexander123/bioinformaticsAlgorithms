@@ -2,6 +2,8 @@
 
 import sys
 
+from sys import argv
+
 def hamming_distance(p,q):
     if len(p) != len(q):
         return -1
@@ -30,9 +32,24 @@ def distance_between_pattern_and_strings(pattern, dna):
         distance += hamming_dist
     return distance
 
-pattern = sys.stdin.readline()
-dna_strings = sys.stdin.readline()
-dna = dna_strings.split()
+
+
+
+if len(argv) == 2:
+    with open(argv[1], 'r') as input_file:
+        pattern = input_file.readline()
+        dna = []
+        dna = input_file.readline()
+        dna = dna.split()
+else:
+    pattern = sys.stdin.readline()
+    dna = []
+    dna = sys.stdin.readline()
+    dna = dna.split()
+
+for i, text in enumerate(dna):
+    dna[i] = text.replace('\n', '')
+
 
 print(distance_between_pattern_and_strings(pattern[0:len(pattern)-1],dna))
 
