@@ -86,4 +86,4 @@ if __name__ == '__main__':
     motifs = []
     randomized_motif_searcher = RandomizedMotifSearch()
     motifs = randomized_motif_searcher.randomized_motif_searchX(k,dna,1000)
-    print(' '.join(motifs))
+    print('\n'.join(motifs))
